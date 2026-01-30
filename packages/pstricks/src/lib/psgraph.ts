@@ -37,6 +37,7 @@ function arrow(x1: number, y1: number, x2: number, y2: number) {
 
 const psgraph: any = {
   env: null as any,
+  global: null as any,
   getSize(): { width: number; height: number } {
     const padding = 20;
     this.env.scale = 1;
@@ -58,6 +59,7 @@ const psgraph: any = {
   psframe(svg: any): void {
     const linewidth = this.linewidth || 2;
     const linecolor = this.linecolor || 'black';
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
     
     // 上边
     svg
@@ -68,7 +70,7 @@ const psgraph: any = {
       .attr('y2', this.y1)
       .style('stroke-width', linewidth)
       .style('stroke', linecolor)
-      .style('stroke-opacity', 1);
+      .style('stroke-opacity', opacity);
 
     // 右边
     svg
@@ -79,7 +81,7 @@ const psgraph: any = {
       .attr('y2', this.y2)
       .style('stroke-width', linewidth)
       .style('stroke', linecolor)
-      .style('stroke-opacity', 1);
+      .style('stroke-opacity', opacity);
 
     // 下边
     svg
@@ -90,7 +92,7 @@ const psgraph: any = {
       .attr('y2', this.y2)
       .style('stroke-width', linewidth)
       .style('stroke', linecolor)
-      .style('stroke-opacity', 1);
+      .style('stroke-opacity', opacity);
 
     // 左边
     svg
@@ -101,10 +103,11 @@ const psgraph: any = {
       .attr('y2', this.y1)
       .style('stroke-width', linewidth)
       .style('stroke', linecolor)
-      .style('stroke-opacity', 1);
+      .style('stroke-opacity', opacity);
   },
 
   pscircle: function (svg: any) {
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
     svg
       .append('svg:circle')
       .attr('cx', this.cx)
@@ -113,7 +116,157 @@ const psgraph: any = {
       .style('stroke', this.linecolor || 'black')
       .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
       .style('stroke-width', this.linewidth || 2)
-      .style('stroke-opacity', 1);
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity);
+  },
+
+  psellipse(svg: any): void {
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    const linecolor = this.linecolor || 'black';
+    const linewidth = this.linewidth || 2;
+    const fillcolor = this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black');
+    
+    svg
+      .append('svg:ellipse')
+      .attr('cx', this.cx)
+      .attr('cy', this.cy)
+      .attr('rx', this.rx)
+      .attr('ry', this.ry)
+      .style('stroke', linecolor)
+      .style('fill', fillcolor)
+      .style('stroke-width', linewidth)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity);
+  },
+
+  psdots(svg: any): void {
+    const dotstyle = this.dotstyle || '*';
+    const dotsize = (this.dotsize || 3) * (this.dotscale || 1);
+    const linecolor = this.linecolor || 'black';
+    const fillcolor = this.fillcolor || 'black';
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    if (!this.points || this.points.length === 0) {
+      return;
+    }
+    
+    this.points.forEach((point: {x: number, y: number}) => {
+      switch (dotstyle) {
+        case '*':
+        case 'dot':
+          // 实心圆
+          svg
+            .append('svg:circle')
+            .attr('cx', point.x)
+            .attr('cy', point.y)
+            .attr('r', dotsize)
+            .style('fill', fillcolor)
+            .style('stroke', 'none')
+            .style('fill-opacity', opacity);
+          break;
+          
+        case 'o':
+        case 'circle':
+          // 空心圆
+          svg
+            .append('svg:circle')
+            .attr('cx', point.x)
+            .attr('cy', point.y)
+            .attr('r', dotsize)
+            .style('fill', 'none')
+            .style('stroke', linecolor)
+            .style('stroke-width', 1)
+            .style('stroke-opacity', opacity);
+          break;
+          
+        case '+':
+        case 'plus':
+          // 加号
+          const plusSize = dotsize;
+          svg
+            .append('svg:line')
+            .attr('x1', point.x - plusSize)
+            .attr('y1', point.y)
+            .attr('x2', point.x + plusSize)
+            .attr('y2', point.y)
+            .style('stroke', linecolor)
+            .style('stroke-width', 1)
+            .style('stroke-opacity', opacity);
+          svg
+            .append('svg:line')
+            .attr('x1', point.x)
+            .attr('y1', point.y - plusSize)
+            .attr('x2', point.x)
+            .attr('y2', point.y + plusSize)
+            .style('stroke', linecolor)
+            .style('stroke-width', 1)
+            .style('stroke-opacity', opacity);
+          break;
+          
+        case 'x':
+          // 叉号
+          const xSize = dotsize;
+          svg
+            .append('svg:line')
+            .attr('x1', point.x - xSize)
+            .attr('y1', point.y - xSize)
+            .attr('x2', point.x + xSize)
+            .attr('y2', point.y + xSize)
+            .style('stroke', linecolor)
+            .style('stroke-width', 1)
+            .style('stroke-opacity', opacity);
+          svg
+            .append('svg:line')
+            .attr('x1', point.x - xSize)
+            .attr('y1', point.y + xSize)
+            .attr('x2', point.x + xSize)
+            .attr('y2', point.y - xSize)
+            .style('stroke', linecolor)
+            .style('stroke-width', 1)
+            .style('stroke-opacity', opacity);
+          break;
+          
+        case 'square':
+          // 方形
+          svg
+            .append('svg:rect')
+            .attr('x', point.x - dotsize)
+            .attr('y', point.y - dotsize)
+            .attr('width', dotsize * 2)
+            .attr('height', dotsize * 2)
+            .style('fill', fillcolor)
+            .style('stroke', 'none')
+            .style('fill-opacity', opacity);
+          break;
+          
+        case 'diamond':
+          // 菱形
+          const diamondSize = dotsize;
+          svg
+            .append('svg:polygon')
+            .attr('points', [
+              [point.x, point.y - diamondSize].join(','),
+              [point.x + diamondSize, point.y].join(','),
+              [point.x, point.y + diamondSize].join(','),
+              [point.x - diamondSize, point.y].join(',')
+            ].join(' '))
+            .style('fill', fillcolor)
+            .style('stroke', 'none')
+            .style('fill-opacity', opacity);
+          break;
+          
+        default:
+          // 默认实心圆
+          svg
+            .append('svg:circle')
+            .attr('cx', point.x)
+            .attr('cy', point.y)
+            .attr('r', dotsize)
+            .style('fill', fillcolor)
+            .style('stroke', 'none')
+            .style('fill-opacity', opacity);
+      }
+    });
   },
 
   psplot(svg: any): void {
@@ -138,12 +291,14 @@ const psgraph: any = {
       context.push('Z');
     }
 
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
     svg
       .append('svg:path')
       .attr('d', context.join(' '))
       .attr('class', 'psplot')
       .style('stroke-width', this.linewidth || 2)
-      .style('stroke-opacity', 1)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity)
       .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
       .style('stroke', this.linecolor || 'black');
   },
@@ -160,11 +315,13 @@ const psgraph: any = {
     });
     context.push('Z');
 
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
     svg
       .append('svg:path')
       .attr('d', context.join(' '))
       .style('stroke-width', this.linewidth || 2)
-      .style('stroke-opacity', 1)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity)
       .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
       .style('stroke', this.linecolor || 'black');
   },
@@ -186,12 +343,14 @@ const psgraph: any = {
 
     const linecolor = this.linecolor || 'black';
     const linewidth = this.linewidth || 2;
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
 
     svg
       .append('svg:path')
       .attr('d', context.join(' '))
       .style('stroke-width', linewidth)
-      .style('stroke-opacity', 1)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity)
       .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
       .style('stroke', linecolor);
 
@@ -225,7 +384,9 @@ const psgraph: any = {
           .append('path')
           .attr('d', arrow(arrowX1, arrowY1, arrowX2, arrowY2))
           .style('fill', linecolor)
-          .style('stroke', linecolor);
+          .style('stroke', linecolor)
+          .style('fill-opacity', opacity)
+          .style('stroke-opacity', opacity);
       }
       
       if (this.arrows[0]) {
@@ -245,8 +406,89 @@ const psgraph: any = {
           .append('path')
           .attr('d', arrow(arrowX1, arrowY1, arrowX2, arrowY2))
           .style('fill', linecolor)
-          .style('stroke', linecolor);
+          .style('stroke', linecolor)
+          .style('fill-opacity', opacity)
+          .style('stroke-opacity', opacity);
       }
+    }
+  },
+
+  psgrid(svg: any): void {
+    const gridcolor = this.gridcolor || 'gray';
+    const subgridcolor = this.subgridcolor || 'lightgray';
+    const gridwidth = this.gridwidth || 1;
+    const subgridwidth = this.subgridwidth || 0.5;
+    const subgriddiv = this.subgriddiv || 5;
+    
+    const x0 = this.x0;
+    const y0 = this.y0;
+    const x1 = this.x1;
+    const y1 = this.y1;
+    const gridsize = this.gridsize;
+    
+    // 获取全局上下文以访问 xunit 和 yunit
+    const global = this.global;
+    if (!global) {
+      console.warn('psgrid: global context not available');
+      return;
+    }
+    
+    // 计算主网格步长（像素）
+    const gridStepX = gridsize * global.xunit;
+    const gridStepY = gridsize * global.yunit;
+    
+    // 计算子网格步长
+    const subgridStepX = gridStepX / subgriddiv;
+    const subgridStepY = gridStepY / subgriddiv;
+    
+    // 绘制子网格（先绘制，在主网格下方）
+    for (let x = x0; x <= x1; x += subgridStepX) {
+      svg
+        .append('svg:line')
+        .attr('x1', x)
+        .attr('y1', y0)
+        .attr('x2', x)
+        .attr('y2', y1)
+        .style('stroke', subgridcolor)
+        .style('stroke-width', subgridwidth)
+        .style('stroke-opacity', 0.5);
+    }
+    
+    for (let y = y0; y <= y1; y += subgridStepY) {
+      svg
+        .append('svg:line')
+        .attr('x1', x0)
+        .attr('y1', y)
+        .attr('x2', x1)
+        .attr('y2', y)
+        .style('stroke', subgridcolor)
+        .style('stroke-width', subgridwidth)
+        .style('stroke-opacity', 0.5);
+    }
+    
+    // 绘制主网格（后绘制，在子网格上方）
+    for (let x = x0; x <= x1; x += gridStepX) {
+      svg
+        .append('svg:line')
+        .attr('x1', x)
+        .attr('y1', y0)
+        .attr('x2', x)
+        .attr('y2', y1)
+        .style('stroke', gridcolor)
+        .style('stroke-width', gridwidth)
+        .style('stroke-opacity', 1);
+    }
+    
+    for (let y = y0; y <= y1; y += gridStepY) {
+      svg
+        .append('svg:line')
+        .attr('x1', x0)
+        .attr('y1', y)
+        .attr('x2', x1)
+        .attr('y2', y)
+        .style('stroke', gridcolor)
+        .style('stroke-width', gridwidth)
+        .style('stroke-opacity', 1);
     }
   },
 
@@ -329,44 +571,28 @@ const psgraph: any = {
   psline(svg: any): void {
     var linewidth = this.linewidth || 2,
       linecolor = this.linecolor || 'black';
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    // 处理自定义 dash
+    const dashArray = this.dash 
+      ? this.dash.split(',').map((v: string) => v.trim()).join(',')
+      : (this.linestyle === 'dashed' ? '9,5' : 
+         this.linestyle === 'dotted' ? '2,2' : null);
 
-    function solid(x1: number, y1: number, x2: number, y2: number) {
-      svg
+    function drawLine(x1: number, y1: number, x2: number, y2: number) {
+      const path = svg
         .append('svg:path')
         .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
         .style('stroke-width', linewidth)
         .style('stroke', linecolor)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity);
+      
+      if (dashArray) {
+        path.style('stroke-dasharray', dashArray);
+      }
     }
 
-    function dashed(x1: number, y1: number, x2: number, y2: number) {
-      svg
-        .append('svg:path')
-        .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
-        .style('stroke-width', linewidth)
-        .style('stroke', linecolor)
-        .style('stroke-dasharray', '9,5')
-        .style('stroke-opacity', 1);
-    }
-
-    function dotted(x1: number, y1: number, x2: number, y2: number) {
-      svg
-        .append('svg:path')
-        .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
-        .style('stroke-width', linewidth)
-        .style('stroke', linecolor)
-        .style('stroke-dasharray', '2,2')
-        .style('stroke-opacity', 1);
-    }
-
-    const linestyle = this.linestyle || 'solid';
-    if (linestyle.match(/dotted/)) {
-      dotted(this.x1, this.y1, this.x2, this.y2);
-    } else if (linestyle.match(/dashed/)) {
-      dashed(this.x1, this.y1, this.x2, this.y2);
-    } else {
-      solid(this.x1, this.y1, this.x2, this.y2);
-    }
+    drawLine(this.x1, this.y1, this.x2, this.y2);
 
     if (this.dots[0]) {
       svg
@@ -377,7 +603,8 @@ const psgraph: any = {
         .style('stroke', linecolor)
         .style('fill', linecolor)
         .style('stroke-width', 1)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity)
+        .style('fill-opacity', opacity);
     }
 
     if (this.dots[1]) {
@@ -389,7 +616,8 @@ const psgraph: any = {
         .style('stroke', linecolor)
         .style('fill', linecolor)
         .style('stroke-width', 1)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity)
+        .style('fill-opacity', opacity);
     }
 
     var x1 = this.x1,
@@ -402,7 +630,9 @@ const psgraph: any = {
         .append('path')
         .attr('d', arrow(x2, y2, x1, y1))
         .style('fill', linecolor)
-        .style('stroke', linecolor);
+        .style('stroke', linecolor)
+        .style('fill-opacity', opacity)
+        .style('stroke-opacity', opacity);
     }
 
     if (this.arrows[1]) {
@@ -410,7 +640,9 @@ const psgraph: any = {
         .append('path')
         .attr('d', arrow(x1, y1, x2, y2))
         .style('fill', linecolor)
-        .style('stroke', linecolor);
+        .style('stroke', linecolor)
+        .style('fill-opacity', opacity)
+        .style('stroke-opacity', opacity);
     }
   },
 

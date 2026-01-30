@@ -25,6 +25,15 @@ export const Expressions = {
     RE.squiggle
   ),
   pscircle: new RegExp('\\\\pscircle' + RE.options + RE.coords + RE.squiggle),
+  psellipse: new RegExp('\\\\psellipse' + RE.options + RE.coords + RE.coords),
+  psdots: new RegExp('\\\\psdots' + RE.options + '(.*)'),
+  psgrid: new RegExp(
+    '\\\\psgrid' + 
+    RE.options + 
+    RE.coords + 
+    RE.coords + 
+    RE.squiggle
+  ),
   pspolygon: new RegExp('\\\\pspolygon' + RE.options + '(.*)'),
   psaxes: new RegExp(
     '\\\\psaxes' +
@@ -138,6 +147,110 @@ export const Functions = {
       linewidth: 2
     };
     if (m[1]) Object.assign(obj, parseOptions(m[1]));
+    return obj;
+  },
+  psellipse(this: PSTricksContext, m: any) {
+    var obj: any = {
+      cx: X.call(this, m[2]),
+      cy: Y.call(this, m[3]),
+      rx: this.xunit * Number(m[4]),
+      ry: this.yunit * Number(m[5]),
+      linecolor: 'black',
+      linestyle: 'solid',
+      fillstyle: 'none',
+      fillcolor: 'black',
+      linewidth: 2
+    };
+    if (m[1]) Object.assign(obj, parseOptions(m[1]));
+    return obj;
+  },
+  psdots(this: PSTricksContext, m: any) {
+    var obj: any = {
+      dotstyle: '*',
+      dotsize: 3,
+      linecolor: 'black',
+      fillcolor: 'black',
+      dotscale: 1
+    };
+    
+    // 解析选项
+    if (m[1]) {
+      Object.assign(obj, parseOptions(m[1]));
+      
+      // 转换 dotsize（可能带单位）
+      if (obj.dotsize) {
+        const sizeStr = String(obj.dotsize);
+        const sizeMatch = sizeStr.match(/(\d+(?:\.\d+)?)\s*pt/);
+        if (sizeMatch) {
+          obj.dotsize = parseFloat(sizeMatch[1]);
+        } else {
+          obj.dotsize = parseFloat(sizeStr) || 3;
+        }
+      }
+      
+      // 转换 dotscale
+      if (obj.dotscale) {
+        obj.dotscale = parseFloat(String(obj.dotscale)) || 1;
+      }
+    }
+    
+    // 解析所有坐标点
+    const coordsStr = m[2] || '';
+    const coordPattern = new RegExp(RE.coords, 'g');
+    const matches = coordsStr.match(coordPattern);
+    const points: Array<{x: number, y: number}> = [];
+    
+    if (matches) {
+      matches.forEach((coord: string) => {
+        const coordMatch = coord.match(RE.coords);
+        if (coordMatch) {
+          points.push({
+            x: X.call(this, coordMatch[1]),
+            y: Y.call(this, coordMatch[2])
+          });
+        }
+      });
+    }
+    
+    obj.points = points;
+    return obj;
+  },
+  psgrid(this: PSTricksContext, m: any) {
+    var obj: any = {
+      x0: X.call(this, m[2]),
+      y0: Y.call(this, m[3]),
+      x1: X.call(this, m[4]),
+      y1: Y.call(this, m[5]),
+      gridsize: Number(m[6]),
+      gridcolor: 'gray',
+      subgridcolor: 'lightgray',
+      subgriddiv: 5,
+      gridwidth: 1,
+      subgridwidth: 0.5
+    };
+    
+    // 解析选项
+    if (m[1]) {
+      const options = parseOptions(m[1]);
+      Object.assign(obj, options);
+      
+      if (options.gridcolor) {
+        obj.gridcolor = options.gridcolor;
+      }
+      if (options.subgridcolor) {
+        obj.subgridcolor = options.subgridcolor;
+      }
+      if (options.subgriddiv) {
+        obj.subgriddiv = Number(options.subgriddiv) || 5;
+      }
+      if (options.gridwidth) {
+        obj.gridwidth = parseFloat(String(options.gridwidth)) || 1;
+      }
+      if (options.subgridwidth) {
+        obj.subgridwidth = parseFloat(String(options.subgridwidth)) || 0.5;
+      }
+    }
+    
     return obj;
   },
   psaxes(this: PSTricksContext, m: any) {
