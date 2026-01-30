@@ -12,7 +12,7 @@ const testTemplates: TestTemplate[] = [
   {
     id: 'psframe',
     name: 'psframe - 矩形框',
-    description: '测试矩形框命令，包括基本用法和选项参数（linecolor, linewidth）',
+    description: '测试矩形框命令，包括基本用法和选项参数（linecolor, linewidth, opacity）',
     code: `\\begin{pspicture}(-3,-3)(3,3)
 % 基本矩形框
 \\psframe(-2,-2)(2,2)
@@ -22,12 +22,17 @@ const testTemplates: TestTemplate[] = [
 
 % 蓝色边框
 \\psframe[linecolor=blue,linewidth=2pt](-0.5,-0.5)(0.5,0.5)
+
+% 透明度测试
+\\psframe[linecolor=green,opacity=0.5,linewidth=2pt](-2.5,-2.5)(-0.5,-0.5)
+\\psframe[linecolor=purple,opacity=0.3,linewidth=2pt](0.5,0.5)(2.5,2.5)
+\\psframe[linecolor=orange,opacity=0.7,linewidth=3pt](-1,1)(1,-1)
 \\end{pspicture}`
   },
   {
     id: 'pscircle',
     name: 'pscircle - 圆形',
-    description: '测试圆形命令，包括基本用法、选项参数（linecolor, fillcolor, fillstyle）和不同半径',
+    description: '测试圆形命令，包括基本用法、选项参数（linecolor, fillcolor, fillstyle, opacity）和不同半径',
     code: `\\begin{pspicture}(-4,-4)(4,4)
 % 基本圆形
 \\pscircle(0,0){1}
@@ -41,6 +46,11 @@ const testTemplates: TestTemplate[] = [
 % 绿色边框+黄色填充
 \\pscircle[linecolor=green,fillcolor=yellow,fillstyle=solid,linewidth=3pt](0,2){1}
 
+% 透明度测试
+\\pscircle[linecolor=red,opacity=0.5](0,-2){1.5}
+\\pscircle[fillcolor=blue,fillstyle=solid,opacity=0.7](2.5,0){0.8}
+\\pscircle[linecolor=green,fillcolor=yellow,fillstyle=solid,opacity=0.3](-2.5,0){0.8}
+
 % 大圆
 \\pscircle[linecolor=purple,linewidth=2pt](0,-2){1.5}
 \\end{pspicture}`
@@ -48,7 +58,7 @@ const testTemplates: TestTemplate[] = [
   {
     id: 'psline',
     name: 'psline - 直线',
-    description: '测试直线命令，包括基本用法、箭头、选项参数（linecolor, linewidth, linestyle）和点标记',
+    description: '测试直线命令，包括基本用法、箭头、选项参数（linecolor, linewidth, linestyle, opacity, dash）和点标记',
     code: `\\begin{pspicture}(-3,-3)(3,3)
 % 基本直线
 \\psline(0,0)(2,2)
@@ -65,6 +75,20 @@ const testTemplates: TestTemplate[] = [
 % 点线
 \\psline[linecolor=orange,linestyle=dotted](0,-2)(0,2)
 
+% 自定义虚线样式
+\\psline[linecolor=purple,dash=10,5]{->}(-2,-1.5)(2,-1.5)
+
+% 自定义虚线样式（多个值）
+\\psline[linecolor=cyan,dash=5,3,2,3](0,-2.5)(0,2.5)
+
+% 透明度测试
+\\psline[linecolor=red,opacity=0.5,linewidth=3pt](-1.5,-2)(-1.5,2)
+\\psline[linecolor=red,opacity=0.3,linewidth=3pt](-1,-2)(-1,2)
+\\psline[linecolor=red,opacity=0.1,linewidth=3pt](-0.5,-2)(-0.5,2)
+
+% 透明度 + 自定义虚线
+\\psline[linecolor=blue,opacity=0.6,dash=8,4]{->}(1.5,-2)(1.5,2)
+
 % 带点的线
 \\psline[linecolor=purple]{*-*}(-1.5,-1.5)(1.5,1.5)
 \\end{pspicture}`
@@ -72,7 +96,7 @@ const testTemplates: TestTemplate[] = [
   {
     id: 'pspolygon',
     name: 'pspolygon - 多边形',
-    description: '测试多边形命令，包括三角形、四边形等，以及选项参数（linecolor, fillcolor, fillstyle）',
+    description: '测试多边形命令，包括三角形、四边形等，以及选项参数（linecolor, fillcolor, fillstyle, opacity）',
     code: `\\begin{pspicture}(-3,-3)(3,3)
 % 三角形
 \\pspolygon[linecolor=red](0,2)(-1.5,-1)(1.5,-1)
@@ -83,14 +107,15 @@ const testTemplates: TestTemplate[] = [
 % 四边形
 \\pspolygon[linecolor=green,linewidth=2pt](1,-1)(2,0)(1,1)(0,0)
 
-% 五边形
-\\pspolygon[fillcolor=yellow,fillstyle=solid,linecolor=purple](-1,1)(-0.3,1.5)(0.5,1.2)(0.3,0.5)(-0.5,0.5)
+% 透明度测试
+\\pspolygon[fillcolor=yellow,fillstyle=solid,linecolor=purple,opacity=0.6](-1,1)(-0.3,1.5)(0.5,1.2)(0.3,0.5)(-0.5,0.5)
+\\pspolygon[linecolor=cyan,opacity=0.4,linewidth=2pt](0,-2)(-1.5,-1.5)(-1,-2.5)(0.5,-2.5)
 \\end{pspicture}`
   },
   {
     id: 'psarc',
     name: 'psarc - 圆弧',
-    description: '测试圆弧命令，包括基本用法、箭头、选项参数（linecolor, linewidth）和不同角度',
+    description: '测试圆弧命令，包括基本用法、箭头、选项参数（linecolor, linewidth, opacity）和不同角度',
     code: `\\begin{pspicture}(-3,-3)(3,3)
 % 基本圆弧（0-90度）
 \\psarc[linecolor=red](0,0){1.5}{0}{90}
@@ -104,6 +129,11 @@ const testTemplates: TestTemplate[] = [
 % 小角度圆弧
 \\psarc[linecolor=orange,linewidth=3pt]{->}(0,0){2}{45}{135}
 
+% 透明度测试
+\\psarc[linecolor=purple,opacity=0.5](0,0){2.2}{0}{90}
+\\psarc[linecolor=cyan,opacity=0.3,linewidth=2pt]{->}(0,0){2.2}{90}{180}
+\\psarc[linecolor=magenta,opacity=0.7](0,0){2.2}{180}{270}
+
 % 完整圆（通过两个半圆）
 \\psarc[linecolor=purple](0,0){1}{0}{180}
 \\psarc[linecolor=purple](0,0){1}{180}{360}
@@ -112,7 +142,7 @@ const testTemplates: TestTemplate[] = [
   {
     id: 'psplot',
     name: 'psplot - 函数图像',
-    description: '测试函数图像命令，包括代数函数、选项参数（linecolor, linewidth, algebraic）',
+    description: '测试函数图像命令，包括代数函数、选项参数（linecolor, linewidth, algebraic, opacity）',
     code: `\\begin{pspicture}(-4,-4)(4,4)
 % 坐标轴
 \\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
@@ -125,6 +155,10 @@ const testTemplates: TestTemplate[] = [
 
 % 线性函数
 \\psplot[algebraic,linecolor=green,linewidth=2pt]{-2}{2}{x}
+
+% 透明度测试
+\\psplot[algebraic,linecolor=purple,opacity=0.5,linewidth=2pt]{-2.5}{2.5}{x*x/2}
+\\psplot[algebraic,linecolor=orange,opacity=0.3,linewidth=2pt]{-3}{3}{cos(x)}
 
 % 标签
 \\rput(2.5,4){$y = x^2$}
@@ -270,6 +304,115 @@ function hello() {
 $$\\int_a^b f(x) dx = F(b) - F(a)$$
 其中 $F'(x) = f(x)$。
 \\end{nicebox}`
+  },
+  {
+    id: 'userline',
+    name: 'userline - 用户线',
+    description: '测试用户线命令，包括基本用法、箭头、选项参数（linecolor, linewidth, linestyle, opacity, dash）和点标记',
+    code: `\\begin{pspicture}(-3,-3)(3,3)
+% 基本用户线
+\\userline(0,0)(2,2)
+
+% 红色箭头
+\\userline[linecolor=red]{->}(-2,-2)(2,2)
+
+% 双向箭头
+\\userline[linecolor=blue,linewidth=2pt]{<->}(-2,0)(2,0)
+
+% 虚线
+\\userline[linecolor=green,linestyle=dashed](-2,2)(2,-2)
+
+% 点线
+\\userline[linecolor=orange,linestyle=dotted](0,-2)(0,2)
+
+% 自定义虚线样式
+\\userline[linecolor=purple,dash=10,5]{->}(-2,-1.5)(2,-1.5)
+
+% 自定义虚线样式（多个值）
+\\userline[linecolor=cyan,dash=5,3,2,3](0,-2.5)(0,2.5)
+
+% 透明度测试
+\\userline[linecolor=red,opacity=0.5,linewidth=3pt](-1.5,-2)(-1.5,2)
+\\userline[linecolor=red,opacity=0.3,linewidth=3pt](-1,-2)(-1,2)
+\\userline[linecolor=red,opacity=0.1,linewidth=3pt](-0.5,-2)(-0.5,2)
+
+% 透明度 + 自定义虚线
+\\userline[linecolor=blue,opacity=0.6,dash=8,4]{->}(1.5,-2)(1.5,2)
+
+% 带点的线
+\\userline[linecolor=purple]{*-*}(-1.5,-1.5)(1.5,1.5)
+
+% 组合测试：透明度 + 虚线 + 箭头
+\\userline[linecolor=magenta,opacity=0.7,dash=6,3]{->}(-2.5,0)(2.5,0)
+\\end{pspicture}`
+  },
+  {
+    id: 'opacity-comprehensive',
+    name: '透明度综合测试',
+    description: '全面测试所有命令的透明度支持（opacity 选项）',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 不同透明度的圆形
+\\pscircle[linecolor=red,opacity=1](0,0){1.5}
+\\pscircle[linecolor=red,opacity=0.7](-2,0){1}
+\\pscircle[linecolor=red,opacity=0.5](2,0){1}
+\\pscircle[linecolor=red,opacity=0.3](0,2){1}
+\\pscircle[linecolor=red,opacity=0.1](0,-2){1}
+
+% 不同透明度的矩形
+\\psframe[linecolor=blue,opacity=1](-2.5,-2.5)(-1.5,-1.5)
+\\psframe[linecolor=blue,opacity=0.7](-1.5,-2.5)(-0.5,-1.5)
+\\psframe[linecolor=blue,opacity=0.5](-0.5,-2.5)(0.5,-1.5)
+\\psframe[linecolor=blue,opacity=0.3](0.5,-2.5)(1.5,-1.5)
+\\psframe[linecolor=blue,opacity=0.1](1.5,-2.5)(2.5,-1.5)
+
+% 不同透明度的线条
+\\psline[linecolor=green,opacity=1]{->}(-3,-3)(-2.5,-2.5)
+\\psline[linecolor=green,opacity=0.7]{->}(-2.5,-3)(-2,-2.5)
+\\psline[linecolor=green,opacity=0.5]{->}(-2,-3)(-1.5,-2.5)
+\\psline[linecolor=green,opacity=0.3]{->}(-1.5,-3)(-1,-2.5)
+\\psline[linecolor=green,opacity=0.1]{->}(-1,-3)(-0.5,-2.5)
+
+% 填充 + 透明度
+\\pscircle[fillcolor=yellow,fillstyle=solid,opacity=0.5](1.5,1.5){0.8}
+\\pspolygon[fillcolor=cyan,fillstyle=solid,opacity=0.6](-1.5,1.5)(-0.5,2)(0.5,1.5)(0,0.5)
+
+% 标签
+\\rput(-3,3.5){透明度测试：1.0, 0.7, 0.5, 0.3, 0.1}
+\\end{pspicture}`
+  },
+  {
+    id: 'dash-comprehensive',
+    name: '虚线样式综合测试',
+    description: '全面测试所有命令的自定义虚线样式支持（dash 选项）',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 不同虚线样式的线条
+\\psline[linecolor=red,dash=10,5]{->}(-3,-3)(-2,-2)
+\\psline[linecolor=blue,dash=5,3]{->}(-3,-2)(-2,-1)
+\\psline[linecolor=green,dash=8,4,2,4]{->}(-3,-1)(-2,0)
+\\psline[linecolor=orange,dash=15,5,5,5]{->}(-3,0)(-2,1)
+\\psline[linecolor=purple,dash=3,2]{->}(-3,1)(-2,2)
+
+% 不同虚线样式的用户线
+\\userline[linecolor=cyan,dash=10,5]{->}(-2,-3)(-1,-2)
+\\userline[linecolor=magenta,dash=5,3]{->}(-2,-2)(-1,-1)
+\\userline[linecolor=yellow,dash=8,4,2,4]{->}(-2,-1)(-1,0)
+\\userline[linecolor=teal,dash=15,5,5,5]{->}(-2,0)(-1,1)
+\\userline[linecolor=pink,dash=3,2]{->}(-2,1)(-1,2)
+
+% 虚线 + 透明度
+\\psline[linecolor=red,opacity=0.7,dash=10,5]{->}(1,-3)(2,-2)
+\\psline[linecolor=blue,opacity=0.5,dash=5,3]{->}(1,-2)(2,-1)
+\\userline[linecolor=green,opacity=0.6,dash=8,4]{->}(1,-1)(2,0)
+
+% 标签
+\\rput(-3,3.5){虚线样式测试：dash=10,5 | dash=5,3 | dash=8,4,2,4 | dash=15,5,5,5 | dash=3,2}
+\\end{pspicture}`
   }
 ];
 

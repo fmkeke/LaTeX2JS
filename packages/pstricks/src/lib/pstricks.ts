@@ -124,10 +124,10 @@ export const Functions = {
   },
   psframe(this: PSTricksContext, m: any) {
     var obj: any = {
-      x1: X.call(this, m[3]),
-      y1: Y.call(this, m[4]),
-      x2: X.call(this, m[5]),
-      y2: Y.call(this, m[6]),
+      x1: X.call(this, m[2]),
+      y1: Y.call(this, m[3]),
+      x2: X.call(this, m[4]),
+      y2: Y.call(this, m[5]),
       linecolor: 'black',
       linestyle: 'solid',
       linewidth: 2

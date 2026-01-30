@@ -44,16 +44,64 @@ export const RE = {
 
 // OPTIONS
 // converts [showorigin=false,labels=none, Dx=3.14] to {showorigin: 'false', labels: 'none', Dx: '3.14'}
+// Also handles values with commas like dash=10,5
 export const parseOptions = function (opts: string) {
   var options = opts.replace(/[\]\[]/g, '');
-  var all = options.split(',');
   var obj: { [key: string]: string } = {};
-  all.forEach((option: string) => {
-    var kv = option.split('=');
-    if (kv.length == 2) {
-      obj[kv[0].trim()] = kv[1].trim();
+  
+  // Split by commas, but be smart about values that contain commas
+  // Strategy: Split by '=' first to identify keys, then handle values that may contain commas
+  var parts: string[] = [];
+  var currentPart = '';
+  var inValue = false;
+  
+  for (var i = 0; i < options.length; i++) {
+    var char = options[i];
+    if (char === '=') {
+      inValue = true;
+      currentPart += char;
+    } else if (char === ',' && !inValue) {
+      // This comma separates options
+      if (currentPart.trim()) {
+        parts.push(currentPart.trim());
+      }
+      currentPart = '';
+      inValue = false;
+    } else if (char === ',' && inValue) {
+      // Check if this comma is followed by a key (word=) or is part of the value
+      var remaining = options.substring(i + 1).trim();
+      // If remaining starts with a word followed by '=', it's a new option
+      if (/^\w+\s*=/.test(remaining)) {
+        // This comma separates options
+        if (currentPart.trim()) {
+          parts.push(currentPart.trim());
+        }
+        currentPart = '';
+        inValue = false;
+      } else {
+        // This comma is part of the value (e.g., dash=10,5)
+        currentPart += char;
+      }
+    } else {
+      currentPart += char;
+    }
+  }
+  
+  // Add the last part
+  if (currentPart.trim()) {
+    parts.push(currentPart.trim());
+  }
+  
+  // Parse each part
+  parts.forEach((part: string) => {
+    var kv = part.split('=');
+    if (kv.length >= 2) {
+      var key = kv[0].trim();
+      var value = kv.slice(1).join('=').trim(); // Join in case value contains '='
+      obj[key] = value;
     }
   });
+  
   return obj;
 };
 

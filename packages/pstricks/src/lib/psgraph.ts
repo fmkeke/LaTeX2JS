@@ -649,46 +649,29 @@ const psgraph: any = {
   userline(svg: any): void {
     var linewidth = this.linewidth,
       linecolor = this.linecolor;
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    // 处理自定义 dash
+    const dashArray = this.dash 
+      ? this.dash.split(',').map((v: string) => v.trim()).join(',')
+      : (this.linestyle === 'dashed' ? '9,5' : 
+         this.linestyle === 'dotted' ? '2,2' : null);
 
-    function solid(x1: number, y1: number, x2: number, y2: number) {
-      svg
+    function drawLine(x1: number, y1: number, x2: number, y2: number) {
+      const path = svg
         .append('svg:path')
         .attr('class', 'userline')
         .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
         .style('stroke-width', linewidth)
         .style('stroke', linecolor)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity);
+      
+      if (dashArray) {
+        path.style('stroke-dasharray', dashArray);
+      }
     }
 
-    function dashed(x1: number, y1: number, x2: number, y2: number) {
-      svg
-        .append('svg:path')
-        .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
-        .attr('class', 'userline')
-        .style('stroke-width', linewidth)
-        .style('stroke', linecolor)
-        .style('stroke-dasharray', '9,5')
-        .style('stroke-opacity', 1);
-    }
-
-    function dotted(x1: number, y1: number, x2: number, y2: number) {
-      svg
-        .append('svg:path')
-        .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
-        .attr('class', 'userline')
-        .style('stroke-width', linewidth)
-        .style('stroke', linecolor)
-        .style('stroke-dasharray', '9,5')
-        .style('stroke-opacity', 1);
-    }
-
-    if (this.linestyle.match(/dotted/)) {
-      dotted(this.x1, this.y1, this.x2, this.y2);
-    } else if (this.linestyle.match(/dashed/)) {
-      dashed(this.x1, this.y1, this.x2, this.y2);
-    } else {
-      solid(this.x1, this.y1, this.x2, this.y2);
-    }
+    drawLine(this.x1, this.y1, this.x2, this.y2);
 
     if (this.dots[0]) {
       svg
@@ -700,7 +683,8 @@ const psgraph: any = {
         .style('stroke', this.linecolor)
         .style('fill', this.linecolor)
         .style('stroke-width', 1)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity)
+        .style('fill-opacity', opacity);
     }
 
     if (this.dots[1]) {
@@ -713,7 +697,8 @@ const psgraph: any = {
         .style('stroke', this.linecolor)
         .style('fill', this.linecolor)
         .style('stroke-width', 1)
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', opacity)
+        .style('fill-opacity', opacity);
     }
 
     var x1 = this.x1,
@@ -727,7 +712,9 @@ const psgraph: any = {
         .attr('d', arrow(x2, y2, x1, y1))
         .attr('class', 'userline')
         .style('fill', this.linecolor)
-        .style('stroke', this.linecolor);
+        .style('stroke', this.linecolor)
+        .style('fill-opacity', opacity)
+        .style('stroke-opacity', opacity);
     }
 
     if (this.arrows[1]) {
@@ -736,7 +723,9 @@ const psgraph: any = {
         .attr('d', arrow(x1, y1, x2, y2))
         .attr('class', 'userline')
         .style('fill', this.linecolor)
-        .style('stroke', this.linecolor);
+        .style('stroke', this.linecolor)
+        .style('fill-opacity', opacity)
+        .style('stroke-opacity', opacity);
     }
   },
 
