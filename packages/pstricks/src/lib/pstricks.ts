@@ -13,7 +13,7 @@ import Settings from '@latex2js/settings';
 
 export const Expressions = {
   pspicture: /\\begin\{pspicture\}\(\s*(.*),(.*)\s*\)\(\s*(.*),(.*)\s*\)/,
-  psframe: /\\psframe\(\s*(.*),(.*)\s*\)\(\s*(.*),(.*)\s*\)/,
+  psframe: new RegExp('\\\\psframe' + RE.options + RE.coords + RE.coords),
   psplot: /\\psplot(\[[^\]]*\])?\{([^\}]*)\}\{([^\}]*)\}\{([^\}]*)\}/,
   psarc: new RegExp(
     '\\\\psarc' +
@@ -24,7 +24,7 @@ export const Expressions = {
     RE.squiggle +
     RE.squiggle
   ),
-  pscircle: /\\pscircle.*\(\s*(.*),(.*)\s*\)\{(.*)\}/,
+  pscircle: new RegExp('\\\\pscircle' + RE.options + RE.coords + RE.squiggle),
   pspolygon: new RegExp('\\\\pspolygon' + RE.options + '(.*)'),
   psaxes: new RegExp(
     '\\\\psaxes' +
@@ -114,20 +114,30 @@ export const Functions = {
     return Object.assign(p, s);
   },
   psframe(this: PSTricksContext, m: any) {
-    var obj = {
-      x1: X.call(this, m[1]),
-      y1: Y.call(this, m[2]),
-      x2: X.call(this, m[3]),
-      y2: Y.call(this, m[4])
+    var obj: any = {
+      x1: X.call(this, m[3]),
+      y1: Y.call(this, m[4]),
+      x2: X.call(this, m[5]),
+      y2: Y.call(this, m[6]),
+      linecolor: 'black',
+      linestyle: 'solid',
+      linewidth: 2
     };
+    if (m[1]) Object.assign(obj, parseOptions(m[1]));
     return obj;
   },
   pscircle(this: PSTricksContext, m: any) {
-    var obj = {
-      cx: X.call(this, m[1]),
-      cy: Y.call(this, m[2]),
-      r: this.xunit * m[3]
+    var obj: any = {
+      cx: X.call(this, m[2]),
+      cy: Y.call(this, m[3]),
+      r: this.xunit * Number(m[4]),
+      linecolor: 'black',
+      linestyle: 'solid',
+      fillstyle: 'none',
+      fillcolor: 'black',
+      linewidth: 2
     };
+    if (m[1]) Object.assign(obj, parseOptions(m[1]));
     return obj;
   },
   psaxes(this: PSTricksContext, m: any) {
@@ -136,7 +146,8 @@ export const Functions = {
       dy: 1 * this.yunit,
       arrows: [0, 0],
       dots: [0, 0],
-      ticks: 'all'
+      ticks: 'all',
+      showorigin: true
     };
     if (m[1]) {
       var options = parseOptions(m[1]);
@@ -145,6 +156,13 @@ export const Functions = {
       }
       if (options.Dy) {
         obj.dy = Number(options.Dy) * this.yunit;
+      }
+      if (options.ticks !== undefined) {
+        obj.ticks = String(options.ticks);
+      }
+      if (options.showorigin !== undefined) {
+        const showoriginValue = String(options.showorigin).toLowerCase();
+        obj.showorigin = showoriginValue === 'true';
       }
     }
     // arrows?
@@ -252,7 +270,7 @@ export const Functions = {
     var obj: any = {
       linecolor: 'black',
       linestyle: 'solid',
-      fillstyle: 'solid',
+      fillstyle: 'none',
       fillcolor: 'black',
       linewidth: 2,
       arrows: arrows,
@@ -277,16 +295,19 @@ export const Functions = {
       obj.cy = Y.call(this, m[4]);
     }
     // choose x units over y, no reason...
-    obj.r = Number(m[5]) * this.xunit;
+    var cx = m[3] ? Number(m[3]) : 0;
+    var cy = m[4] ? Number(m[4]) : 0;
+    var radius = Number(m[5]);
+    obj.r = radius * this.xunit;
     obj.angleA = (Number(m[6]) * Math.PI) / 180;
     obj.angleB = (Number(m[7]) * Math.PI) / 180;
     obj.A = {
-      x: X.call(this, Number(m[5]) * Math.cos(obj.angleA)),
-      y: Y.call(this, Number(m[5]) * Math.sin(obj.angleA))
+      x: X.call(this, cx + radius * Math.cos(obj.angleA)),
+      y: Y.call(this, cy + radius * Math.sin(obj.angleA))
     };
     obj.B = {
-      x: X.call(this, Number(m[5]) * Math.cos(obj.angleB)),
-      y: Y.call(this, Number(m[5]) * Math.sin(obj.angleB))
+      x: X.call(this, cx + radius * Math.cos(obj.angleB)),
+      y: Y.call(this, cy + radius * Math.sin(obj.angleB))
     };
     return obj;
   },

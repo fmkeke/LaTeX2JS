@@ -56,44 +56,51 @@ const psgraph: any = {
   },
 
   psframe(svg: any): void {
+    const linewidth = this.linewidth || 2;
+    const linecolor = this.linecolor || 'black';
+    
+    // 上边
     svg
       .append('svg:line')
       .attr('x1', this.x1)
       .attr('y1', this.y1)
       .attr('x2', this.x2)
       .attr('y2', this.y1)
-      .style('stroke-width', 2)
-      .style('stroke', 'rgb(0,0,0)')
+      .style('stroke-width', linewidth)
+      .style('stroke', linecolor)
       .style('stroke-opacity', 1);
 
+    // 右边
     svg
       .append('svg:line')
       .attr('x1', this.x2)
       .attr('y1', this.y1)
       .attr('x2', this.x2)
       .attr('y2', this.y2)
-      .style('stroke-width', 2)
-      .style('stroke', 'rgb(0,0,0)')
+      .style('stroke-width', linewidth)
+      .style('stroke', linecolor)
       .style('stroke-opacity', 1);
 
+    // 下边
     svg
       .append('svg:line')
       .attr('x1', this.x2)
       .attr('y1', this.y2)
       .attr('x2', this.x1)
       .attr('y2', this.y2)
-      .style('stroke-width', 2)
-      .style('stroke', 'rgb(0,0,0)')
+      .style('stroke-width', linewidth)
+      .style('stroke', linecolor)
       .style('stroke-opacity', 1);
 
+    // 左边
     svg
       .append('svg:line')
       .attr('x1', this.x1)
       .attr('y1', this.y2)
       .attr('x2', this.x1)
       .attr('y2', this.y1)
-      .style('stroke-width', 2)
-      .style('stroke', 'rgb(0,0,0)')
+      .style('stroke-width', linewidth)
+      .style('stroke', linecolor)
       .style('stroke-opacity', 1);
   },
 
@@ -103,9 +110,9 @@ const psgraph: any = {
       .attr('cx', this.cx)
       .attr('cy', this.cy)
       .attr('r', this.r)
-      .style('stroke', 'black')
-      .style('fill', 'none')
-      .style('stroke-width', 2)
+      .style('stroke', this.linecolor || 'black')
+      .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
+      .style('stroke-width', this.linewidth || 2)
       .style('stroke-opacity', 1);
   },
 
@@ -135,10 +142,10 @@ const psgraph: any = {
       .append('svg:path')
       .attr('d', context.join(' '))
       .attr('class', 'psplot')
-      .style('stroke-width', this.linewidth)
+      .style('stroke-width', this.linewidth || 2)
       .style('stroke-opacity', 1)
-      .style('fill', this.fillstyle === 'none' ? 'none' : this.fillcolor)
-      .style('stroke', this.linecolor);
+      .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
+      .style('stroke', this.linecolor || 'black');
   },
 
   pspolygon(svg: any): void {
@@ -156,40 +163,91 @@ const psgraph: any = {
     svg
       .append('svg:path')
       .attr('d', context.join(' '))
-      .style('stroke-width', this.linewidth)
+      .style('stroke-width', this.linewidth || 2)
       .style('stroke-opacity', 1)
-      .style('fill', this.fillstyle === 'none' ? 'none' : this.fillcolor)
-      .style('stroke', 'black');
+      .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
+      .style('stroke', this.linecolor || 'black');
   },
 
   psarc(svg: any): void {
     var context = [];
     context.push('M');
-    context.push(this.cx);
-    context.push(this.cy);
-    context.push('L');
     context.push(this.A.x);
     context.push(this.A.y);
-
+    
     context.push('A');
-
-    context.push(this.A.x);
-    context.push(this.A.y);
-
-    context.push(0);
-    context.push(0);
-    context.push(0);
-
+    context.push(this.r);  // rx
+    context.push(this.r);  // ry
+    context.push(0);      // x-axis-rotation
+    context.push(0);      // large-arc-flag (0 for small arc)
+    context.push(0);      // sweep-flag (0 for counterclockwise, PSTricks default)
     context.push(this.B.x);
     context.push(this.B.y);
+
+    const linecolor = this.linecolor || 'black';
+    const linewidth = this.linewidth || 2;
 
     svg
       .append('svg:path')
       .attr('d', context.join(' '))
-      .style('stroke-width', 2)
+      .style('stroke-width', linewidth)
       .style('stroke-opacity', 1)
-      .style('fill', 'blue')
-      .style('stroke', 'black');
+      .style('fill', this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black'))
+      .style('stroke', linecolor);
+
+    // 渲染箭头
+    if (this.arrows && this.arrows.length >= 2) {
+      // arrows[0] 表示起点箭头，arrows[1] 表示终点箭头
+      // 计算圆弧的圆心（cx, cy）和半径 r
+      const cx = this.cx || 0;
+      const cy = this.cy || 0;
+      const r = this.r || 1;
+      
+      if (this.arrows[1]) {
+        // 终点箭头：在 B 点绘制箭头，方向沿着圆弧的切线方向
+        // 计算 B 点相对于圆心的角度
+        const angleB = Math.atan2(this.B.y - cy, this.B.x - cx);
+        // 对于逆时针圆弧（sweep-flag=0），切线方向垂直于半径方向
+        // 在数学坐标系中，逆时针圆弧的切线方向是 angle + π/2
+        // 但由于 Y 函数已经反转了 y 轴，在 SVG 坐标系中需要调整
+        // 对于逆时针圆弧，切线方向应该是 angle + π/2（指向圆弧继续的方向）
+        const tangentAngle = angleB + Math.PI / 2;
+        const arrowLength = 20;
+        
+        // arrow(x1, y1, x2, y2) 中 x2, y2 是箭头尖端位置，箭头从 x2,y2 指向 x1,y1
+        // 所以箭头尖端应该在 B 点，方向参考点在切线方向向前（沿着圆弧方向）
+        const arrowX1 = this.B.x + Math.cos(tangentAngle) * arrowLength;
+        const arrowY1 = this.B.y + Math.sin(tangentAngle) * arrowLength;
+        const arrowX2 = this.B.x;  // 箭头尖端在 B 点
+        const arrowY2 = this.B.y;
+        
+        svg
+          .append('path')
+          .attr('d', arrow(arrowX1, arrowY1, arrowX2, arrowY2))
+          .style('fill', linecolor)
+          .style('stroke', linecolor);
+      }
+      
+      if (this.arrows[0]) {
+        // 起点箭头：在 A 点绘制箭头，方向沿着圆弧的切线方向（反向）
+        const angleA = Math.atan2(this.A.y - cy, this.A.x - cx);
+        const tangentAngle = angleA + Math.PI / 2;
+        const arrowLength = 20;
+        
+        // arrow(x1, y1, x2, y2) 中 x2, y2 是箭头尖端位置，箭头从 x2,y2 指向 x1,y1
+        // 所以箭头尖端应该在 A 点，方向参考点在切线方向向后（与圆弧方向相反）
+        const arrowX1 = this.A.x - Math.cos(tangentAngle) * arrowLength;
+        const arrowY1 = this.A.y - Math.sin(tangentAngle) * arrowLength;
+        const arrowX2 = this.A.x;  // 箭头尖端在 A 点
+        const arrowY2 = this.A.y;
+        
+        svg
+          .append('path')
+          .attr('d', arrow(arrowX1, arrowY1, arrowX2, arrowY2))
+          .style('fill', linecolor)
+          .style('stroke', linecolor);
+      }
+    }
   },
 
   psaxes(svg: any): void {
@@ -209,12 +267,20 @@ const psgraph: any = {
 
     var xticks = () => {
       for (var x = xaxis[0]; x <= xaxis[1]; x += this.dx) {
+        // 如果 showorigin=false 且 x 在原点附近，跳过原点处的刻度
+        if (this.showorigin === false && Math.abs(x - origin[0]) < 0.01) {
+          continue;
+        }
         line(x, origin[1] - 5, x, origin[1] + 5);
       }
     };
 
     var yticks = () => {
       for (var y = yaxis[0]; y <= yaxis[1]; y += this.dy) {
+        // 如果 showorigin=false 且 y 在原点附近，跳过原点处的刻度
+        if (this.showorigin === false && Math.abs(y - origin[1]) < 0.01) {
+          continue;
+        }
         line(origin[0] - 5, y, origin[0] + 5, y);
       }
     };
@@ -222,12 +288,12 @@ const psgraph: any = {
     line(xaxis[0], origin[1], xaxis[1], origin[1]);
     line(origin[0], yaxis[0], origin[0], yaxis[1]);
 
-    if (this.ticks.match(/all/)) {
+    if (this.ticks && this.ticks.match(/all/)) {
       xticks();
       yticks();
-    } else if (this.ticks.match(/x/)) {
+    } else if (this.ticks && this.ticks.match(/x/)) {
       xticks();
-    } else if (this.ticks.match(/y/)) {
+    } else if (this.ticks && this.ticks.match(/y/)) {
       yticks();
     }
 
@@ -261,8 +327,8 @@ const psgraph: any = {
   },
 
   psline(svg: any): void {
-    var linewidth = this.linewidth,
-      linecolor = this.linecolor;
+    var linewidth = this.linewidth || 2,
+      linecolor = this.linecolor || 'black';
 
     function solid(x1: number, y1: number, x2: number, y2: number) {
       svg
@@ -289,13 +355,14 @@ const psgraph: any = {
         .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
         .style('stroke-width', linewidth)
         .style('stroke', linecolor)
-        .style('stroke-dasharray', '9,5')
+        .style('stroke-dasharray', '2,2')
         .style('stroke-opacity', 1);
     }
 
-    if (this.linestyle.match(/dotted/)) {
+    const linestyle = this.linestyle || 'solid';
+    if (linestyle.match(/dotted/)) {
       dotted(this.x1, this.y1, this.x2, this.y2);
-    } else if (this.linestyle.match(/dashed/)) {
+    } else if (linestyle.match(/dashed/)) {
       dashed(this.x1, this.y1, this.x2, this.y2);
     } else {
       solid(this.x1, this.y1, this.x2, this.y2);
@@ -307,8 +374,8 @@ const psgraph: any = {
         .attr('cx', this.x1)
         .attr('cy', this.y1)
         .attr('r', 3)
-        .style('stroke', this.linecolor)
-        .style('fill', this.linecolor)
+        .style('stroke', linecolor)
+        .style('fill', linecolor)
         .style('stroke-width', 1)
         .style('stroke-opacity', 1);
     }
@@ -319,8 +386,8 @@ const psgraph: any = {
         .attr('cx', this.x2)
         .attr('cy', this.y2)
         .attr('r', 3)
-        .style('stroke', this.linecolor)
-        .style('fill', this.linecolor)
+        .style('stroke', linecolor)
+        .style('fill', linecolor)
         .style('stroke-width', 1)
         .style('stroke-opacity', 1);
     }
@@ -334,16 +401,16 @@ const psgraph: any = {
       svg
         .append('path')
         .attr('d', arrow(x2, y2, x1, y1))
-        .style('fill', this.linecolor)
-        .style('stroke', this.linecolor);
+        .style('fill', linecolor)
+        .style('stroke', linecolor);
     }
 
     if (this.arrows[1]) {
       svg
         .append('path')
         .attr('d', arrow(x1, y1, x2, y2))
-        .style('fill', this.linecolor)
-        .style('stroke', this.linecolor);
+        .style('fill', linecolor)
+        .style('stroke', linecolor);
     }
   },
 
