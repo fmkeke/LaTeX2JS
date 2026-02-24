@@ -14,6 +14,9 @@ import Settings from '@latex2js/settings';
 export const Expressions = {
   pspicture: /\\begin\{pspicture\}\(\s*(.*),(.*)\s*\)\(\s*(.*),(.*)\s*\)/,
   psframe: new RegExp('\\\\psframe' + RE.options + RE.coords + RE.coords),
+  psoval: new RegExp('\\\\psoval' + RE.options + RE.coords + RE.coords),
+  psdiamond: new RegExp('\\\\psdiamond' + RE.options + RE.coords + RE.coords),
+  psvector: new RegExp('\\\\psvector' + RE.options + RE.type + RE.coords + RE.coords),
   psplot: /\\psplot(\[[^\]]*\])?\{([^\}]*)\}\{([^\}]*)\}\{([^\}]*)\}/,
   psarc: new RegExp(
     '\\\\psarc' +
@@ -130,7 +133,97 @@ export const Functions = {
       y2: Y.call(this, m[5]),
       linecolor: 'black',
       linestyle: 'solid',
-      linewidth: 2
+      linewidth: 2,
+      fillstyle: 'none',
+      fillcolor: 'black'
+    };
+    if (m[1]) {
+      const options = parseOptions(m[1]);
+      Object.assign(obj, options);
+      
+      // 处理 linearc（圆角半径）
+      if (options.linearc) {
+        // linearc 可能是数字（pt）或带单位的字符串
+        const linearcStr = String(options.linearc);
+        const linearcMatch = linearcStr.match(/(\d+(?:\.\d+)?)\s*pt/);
+        if (linearcMatch) {
+          obj.linearc = parseFloat(linearcMatch[1]);
+        } else {
+          obj.linearc = parseFloat(linearcStr) || 0;
+        }
+      }
+    }
+    return obj;
+  },
+  psoval(this: PSTricksContext, m: any) {
+    var obj: any = {
+      x1: X.call(this, m[2]),
+      y1: Y.call(this, m[3]),
+      x2: X.call(this, m[4]),
+      y2: Y.call(this, m[5]),
+      linecolor: 'black',
+      linestyle: 'solid',
+      linewidth: 2,
+      fillstyle: 'none',
+      fillcolor: 'black',
+      linearc: 0.3  // 默认圆角半径（单位：pt）
+    };
+    if (m[1]) {
+      const options = parseOptions(m[1]);
+      Object.assign(obj, options);
+      
+      // 处理 linearc（圆角半径）
+      if (options.linearc) {
+        // linearc 可能是数字（pt）或带单位的字符串
+        const linearcStr = String(options.linearc);
+        const linearcMatch = linearcStr.match(/(\d+(?:\.\d+)?)\s*pt/);
+        if (linearcMatch) {
+          obj.linearc = parseFloat(linearcMatch[1]);
+        } else {
+          obj.linearc = parseFloat(linearcStr) || 0.3;
+        }
+      }
+    }
+    return obj;
+  },
+  psdiamond(this: PSTricksContext, m: any) {
+    var obj: any = {
+      cx: X.call(this, m[2]),  // 中心点 x
+      cy: Y.call(this, m[3]),  // 中心点 y
+      width: Number(m[4]) * this.xunit,  // 宽度（转换为像素）
+      height: Number(m[5]) * this.yunit, // 高度（转换为像素）
+      linecolor: 'black',
+      linestyle: 'solid',
+      linewidth: 2,
+      fillstyle: 'none',
+      fillcolor: 'black'
+    };
+    if (m[1]) Object.assign(obj, parseOptions(m[1]));
+    return obj;
+  },
+  psvector(this: PSTricksContext, m: any) {
+    // 默认箭头类型
+    var defaultArrows = parseArrows('->');
+    var arrows = defaultArrows.arrows;
+    var dots = defaultArrows.dots;
+    
+    // 如果提供了箭头类型，使用提供的
+    if (m[2]) {
+      var l = parseArrows(m[2]);
+      arrows = l.arrows;
+      dots = l.dots;
+    }
+    
+    var obj: any = {
+      x1: X.call(this, m[3]),
+      y1: Y.call(this, m[4]),
+      x2: X.call(this, m[5]),
+      y2: Y.call(this, m[6]),
+      linecolor: 'black',
+      linestyle: 'solid',
+      linewidth: 2,
+      arrows: arrows,
+      dots: dots
     };
     if (m[1]) Object.assign(obj, parseOptions(m[1]));
     return obj;

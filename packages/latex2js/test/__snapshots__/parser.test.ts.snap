@@ -50,6 +50,11 @@ exports[`Parser parse 1`] = `
           "data": {
             "cx": 250,
             "cy": 250,
+            "fillcolor": "black",
+            "fillstyle": "none",
+            "linecolor": "black",
+            "linestyle": "solid",
+            "linewidth": 2,
             "r": 150,
           },
           "env": {
@@ -65,13 +70,18 @@ exports[`Parser parse 1`] = `
           "fn": [Function],
           "match": [
             "\\pscircle(0,0){ 3 }",
+            undefined,
             "0",
             "0",
             " 3 ",
           ],
         },
       ],
+      "psdiamond": [],
+      "psdots": [],
+      "psellipse": [],
       "psframe": [],
+      "psgrid": [],
       "psline": [
         {
           "data": {
@@ -158,10 +168,12 @@ exports[`Parser parse 1`] = `
           ],
         },
       ],
+      "psoval": [],
       "pspicture": [],
       "psplot": [],
       "pspolygon": [],
       "psset": [],
+      "psvector": [],
       "rput": [],
       "slider": [],
       "userline": [],
@@ -306,6 +318,11 @@ exports[`Parser parser 1`] = `
           "data": {
             "cx": 250,
             "cy": 250,
+            "fillcolor": "black",
+            "fillstyle": "none",
+            "linecolor": "black",
+            "linestyle": "solid",
+            "linewidth": 2,
             "r": 150,
           },
           "env": {
@@ -321,13 +338,18 @@ exports[`Parser parser 1`] = `
           "fn": [Function],
           "match": [
             "\\pscircle(0,0){ 3 }",
+            undefined,
             "0",
             "0",
             " 3 ",
           ],
         },
       ],
+      "psdiamond": [],
+      "psdots": [],
+      "psellipse": [],
       "psframe": [],
+      "psgrid": [],
       "psline": [
         {
           "data": {
@@ -414,10 +436,12 @@ exports[`Parser parser 1`] = `
           ],
         },
       ],
+      "psoval": [],
       "pspicture": [],
       "psplot": [],
       "pspolygon": [],
       "psset": [],
+      "psvector": [],
       "rput": [],
       "slider": [],
       "userline": [],

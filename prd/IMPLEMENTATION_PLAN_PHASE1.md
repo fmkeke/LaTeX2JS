@@ -146,13 +146,14 @@ const opacityValue = Math.max(0, Math.min(1, opacity));
 ### 📝 实施步骤
 
 1. ✅ **步骤 1**: 确认 `parseOptions` 已支持（无需修改）
-2. ⬜ **步骤 2**: 修改 `pscircle` 函数
-3. ⬜ **步骤 3**: 修改 `psframe` 函数
-4. ⬜ **步骤 4**: 修改 `psline` 函数
-5. ⬜ **步骤 5**: 修改 `psarc` 函数
-6. ⬜ **步骤 6**: 修改 `pspolygon` 函数
-7. ⬜ **步骤 7**: 修改 `psplot` 函数
-8. ⬜ **步骤 8**: 添加测试用例
+2. ✅ **步骤 2**: 修改 `pscircle` 函数
+3. ✅ **步骤 3**: 修改 `psframe` 函数
+4. ✅ **步骤 4**: 修改 `psline` 函数
+5. ✅ **步骤 5**: 修改 `psarc` 函数
+6. ✅ **步骤 6**: 修改 `pspolygon` 函数
+7. ✅ **步骤 7**: 修改 `psplot` 函数
+8. ✅ **步骤 8**: 修改 `userline` 函数
+9. ✅ **步骤 9**: 添加测试用例
 
 ### 🧪 测试用例
 
@@ -347,12 +348,10 @@ psline(svg: any): void {
 
 ### 📝 实施步骤
 
-1. ✅ **步骤 1**: 确认 `parseOptions` 已支持（无需修改）
-2. ⬜ **步骤 2**: 修改 `psline` 函数，添加 dash 支持
-3. ⬜ **步骤 3**: 修改 `psarc` 函数（如果支持虚线）
-4. ⬜ **步骤 4**: 修改 `pspolygon` 函数（如果支持虚线）
-5. ⬜ **步骤 5**: 修改 `psplot` 函数（如果支持虚线）
-6. ⬜ **步骤 6**: 添加测试用例
+1. ✅ **步骤 1**: 确认 `parseOptions` 已支持（已修复以正确处理包含逗号的值）
+2. ✅ **步骤 2**: 修改 `psline` 函数，添加 dash 支持
+3. ✅ **步骤 3**: 修改 `userline` 函数，添加 dash 支持
+4. ✅ **步骤 4**: 添加测试用例
 
 ### 🧪 测试用例
 
@@ -578,11 +577,11 @@ const psgraph: any = {
 
 ### 📝 实施步骤
 
-1. ⬜ **步骤 1**: 在 `pstricks.ts` 中添加 `psgrid` 正则表达式到 `Expressions`
-2. ⬜ **步骤 2**: 在 `pstricks.ts` 中添加 `psgrid` 解析函数到 `Functions`
-3. ⬜ **步骤 3**: 在 `psgraph.ts` 中添加 `psgrid` 渲染函数到 `psgraph` 对象
-4. ⬜ **步骤 4**: **无需额外注册** - 解析器会自动识别 `Expressions` 和 `Functions` 中的新命令
-5. ⬜ **步骤 5**: 添加测试用例
+1. ✅ **步骤 1**: 在 `pstricks.ts` 中添加 `psgrid` 正则表达式到 `Expressions`
+2. ✅ **步骤 2**: 在 `pstricks.ts` 中添加 `psgrid` 解析函数到 `Functions`
+3. ✅ **步骤 3**: 在 `psgraph.ts` 中添加 `psgrid` 渲染函数到 `psgraph` 对象
+4. ✅ **步骤 4**: **无需额外注册** - 解析器会自动识别 `Expressions` 和 `Functions` 中的新命令
+5. ✅ **步骤 5**: 添加测试用例
 
 **注意**: 解析器通过 `parsePSExpression` 方法自动遍历 `PSTricks.Expressions` 中的所有表达式，如果匹配就调用对应的 `PSTricks.Functions` 函数。因此只需要在 `pstricks.ts` 中添加即可。
 
@@ -875,11 +874,11 @@ const psgraph: any = {
 
 ### 📝 实施步骤
 
-1. ⬜ **步骤 1**: 在 `pstricks.ts` 中添加 `psdots` 正则表达式到 `Expressions`
-2. ⬜ **步骤 2**: 在 `pstricks.ts` 中添加 `psdots` 解析函数到 `Functions`
-3. ⬜ **步骤 3**: 在 `psgraph.ts` 中添加 `psdots` 渲染函数到 `psgraph` 对象
-4. ⬜ **步骤 4**: **无需额外注册** - 解析器会自动识别
-5. ⬜ **步骤 5**: 添加测试用例
+1. ✅ **步骤 1**: 在 `pstricks.ts` 中添加 `psdots` 正则表达式到 `Expressions`
+2. ✅ **步骤 2**: 在 `pstricks.ts` 中添加 `psdots` 解析函数到 `Functions`
+3. ✅ **步骤 3**: 在 `psgraph.ts` 中添加 `psdots` 渲染函数到 `psgraph` 对象
+4. ✅ **步骤 4**: **无需额外注册** - 解析器会自动识别
+5. ✅ **步骤 5**: 添加测试用例
 
 ### 🧪 测试用例
 
@@ -1033,11 +1032,11 @@ const psgraph: any = {
 
 ### 📝 实施步骤
 
-1. ⬜ **步骤 1**: 在 `pstricks.ts` 中添加 `psellipse` 正则表达式到 `Expressions`
-2. ⬜ **步骤 2**: 在 `pstricks.ts` 中添加 `psellipse` 解析函数到 `Functions`
-3. ⬜ **步骤 3**: 在 `psgraph.ts` 中添加 `psellipse` 渲染函数到 `psgraph` 对象
-4. ⬜ **步骤 4**: **无需额外注册** - 解析器会自动识别
-5. ⬜ **步骤 5**: 添加测试用例
+1. ✅ **步骤 1**: 在 `pstricks.ts` 中添加 `psellipse` 正则表达式到 `Expressions`
+2. ✅ **步骤 2**: 在 `pstricks.ts` 中添加 `psellipse` 解析函数到 `Functions`
+3. ✅ **步骤 3**: 在 `psgraph.ts` 中添加 `psellipse` 渲染函数到 `psgraph` 对象
+4. ✅ **步骤 4**: **无需额外注册** - 解析器会自动识别
+5. ✅ **步骤 5**: 添加测试用例
 
 ### 🧪 测试用例
 

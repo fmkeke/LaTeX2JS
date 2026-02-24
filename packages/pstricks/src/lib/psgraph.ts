@@ -106,6 +106,55 @@ const psgraph: any = {
       .style('stroke-opacity', opacity);
   },
 
+  psoval(svg: any): void {
+    const linewidth = this.linewidth || 2;
+    const linecolor = this.linecolor || 'black';
+    const fillcolor = this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black');
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    // 计算矩形的左上角坐标和宽高
+    const x = Math.min(this.x1, this.x2);
+    const y = Math.min(this.y1, this.y2);
+    const width = Math.abs(this.x2 - this.x1);
+    const height = Math.abs(this.y2 - this.y1);
+    
+    // 计算圆角半径（linearc 单位是 pt，需要转换为像素）
+    // 假设 1pt = 1.333px（标准转换），但这里我们直接使用 linearc 值
+    // 如果 linearc 是相对值（如 0.3），则相对于较小的边
+    let rx = 0;
+    let ry = 0;
+    if (this.linearc !== undefined && this.linearc !== null) {
+      const linearcValue = parseFloat(String(this.linearc));
+      if (linearcValue > 0) {
+        // 如果 linearc < 1，认为是相对值（相对于较小边的比例）
+        if (linearcValue < 1) {
+          const minSide = Math.min(width, height);
+          rx = ry = minSide * linearcValue;
+        } else {
+          // 否则认为是绝对像素值
+          rx = ry = linearcValue;
+        }
+        // 确保圆角半径不超过宽度或高度的一半
+        rx = Math.min(rx, width / 2);
+        ry = Math.min(ry, height / 2);
+      }
+    }
+    
+    svg
+      .append('svg:rect')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('width', width)
+      .attr('height', height)
+      .attr('rx', rx)
+      .attr('ry', ry)
+      .style('stroke', linecolor)
+      .style('stroke-width', linewidth)
+      .style('fill', fillcolor)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity);
+  },
+
   pscircle: function (svg: any) {
     const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
     svg
@@ -118,6 +167,120 @@ const psgraph: any = {
       .style('stroke-width', this.linewidth || 2)
       .style('stroke-opacity', opacity)
       .style('fill-opacity', opacity);
+  },
+
+  psdiamond(svg: any): void {
+    const linewidth = this.linewidth || 2;
+    const linecolor = this.linecolor || 'black';
+    const fillcolor = this.fillstyle === 'none' ? 'none' : (this.fillcolor || 'black');
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    // 计算菱形的四个顶点
+    const cx = this.cx;
+    const cy = this.cy;
+    const halfWidth = this.width / 2;
+    const halfHeight = this.height / 2;
+    
+    const points = [
+      [cx, cy - halfHeight],      // 上
+      [cx + halfWidth, cy],        // 右
+      [cx, cy + halfHeight],       // 下
+      [cx - halfWidth, cy]         // 左
+    ];
+    
+    // 使用 polygon 绘制菱形
+    svg
+      .append('svg:polygon')
+      .attr('points', points.map(p => p.join(',')).join(' '))
+      .style('stroke', linecolor)
+      .style('stroke-width', linewidth)
+      .style('fill', fillcolor)
+      .style('stroke-opacity', opacity)
+      .style('fill-opacity', opacity);
+  },
+
+  psvector(svg: any): void {
+    // psvector 类似 psline，但默认带箭头
+    var linewidth = this.linewidth || 2,
+      linecolor = this.linecolor || 'black';
+    const opacity = this.opacity ? Math.max(0, Math.min(1, parseFloat(this.opacity))) : 1;
+    
+    // 处理自定义 dash
+    const dashArray = this.dash
+      ? this.dash.split(',').map((v: string) => v.trim()).join(',')
+      : (this.linestyle === 'dashed' ? '9,5' :
+         this.linestyle === 'dotted' ? '2,2' : null);
+    
+    function drawLine(x1: number, y1: number, x2: number, y2: number) {
+      const path = svg
+        .append('svg:path')
+        .attr('d', 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2)
+        .style('stroke-width', linewidth)
+        .style('stroke', linecolor)
+        .style('stroke-opacity', opacity);
+      
+      if (dashArray) {
+        path.style('stroke-dasharray', dashArray);
+      }
+    }
+    
+    drawLine(this.x1, this.y1, this.x2, this.y2);
+    
+    // 处理点标记（类似 psline）
+    if (this.dots && this.dots.length > 0) {
+      if (this.dots[0]) {
+        svg
+          .append('svg:circle')
+          .attr('cx', this.x1)
+          .attr('cy', this.y1)
+          .attr('r', 3)
+          .style('stroke', linecolor)
+          .style('fill', linecolor)
+          .style('stroke-width', 1)
+          .style('stroke-opacity', opacity)
+          .style('fill-opacity', opacity);
+      }
+      if (this.dots[1]) {
+        svg
+          .append('svg:circle')
+          .attr('cx', this.x2)
+          .attr('cy', this.y2)
+          .attr('r', 3)
+          .style('stroke', linecolor)
+          .style('fill', linecolor)
+          .style('stroke-width', 1)
+          .style('stroke-opacity', opacity)
+          .style('fill-opacity', opacity);
+      }
+    }
+    
+    // 处理箭头（类似 psline）
+    var x1 = this.x1,
+      y1 = this.y1,
+      x2 = this.x2,
+      y2 = this.y2;
+    
+    if (this.arrows && this.arrows.length > 0) {
+      if (this.arrows[0]) {
+        svg
+          .append('path')
+          .attr('d', arrow(x2, y2, x1, y1))
+          .style('fill', linecolor)
+          .style('stroke', linecolor)
+          .style('fill-opacity', opacity)
+          .style('stroke-opacity', opacity);
+      }
+      
+      if (this.arrows[1]) {
+        svg
+          .append('path')
+          .attr('d', arrow(x1, y1, x2, y2))
+          .style('fill', linecolor)
+          .style('stroke', linecolor)
+          .style('fill-opacity', opacity)
+          .style('stroke-opacity', opacity);
+      }
+    }
   },
 
   psellipse(svg: any): void {

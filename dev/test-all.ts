@@ -413,6 +413,170 @@ $$\\int_a^b f(x) dx = F(b) - F(a)$$
 % 标签
 \\rput(-3,3.5){虚线样式测试：dash=10,5 | dash=5,3 | dash=8,4,2,4 | dash=15,5,5,5 | dash=3,2}
 \\end{pspicture}`
+  },
+  {
+    id: 'psgrid',
+    name: 'psgrid - 网格',
+    description: '测试网格命令，包括基本用法、选项参数（gridcolor, subgridcolor, subgriddiv）',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 基本网格
+\\psgrid(-3,-3)(3,3){1}
+
+% 自定义颜色
+\\psgrid[gridcolor=blue,subgridcolor=lightblue](-2,-2)(2,2){0.5}
+
+% 自定义子网格分割
+\\psgrid[subgriddiv=10,gridcolor=green](-1,-1)(1,1){0.2}
+
+% 与坐标轴结合
+\\psaxes[showorigin=false](0,0)(-3.5,-3.5)(3.5,3.5)
+\\psgrid[gridcolor=lightgray,subgridcolor=lightblue](0,0)(3,3){0.5}
+\\end{pspicture}`
+  },
+  {
+    id: 'psdots',
+    name: 'psdots - 点集',
+    description: '测试点集命令，包括基本用法、不同点样式（dotstyle）、大小（dotsize）和选项参数',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 基本点集（实心圆）
+\\psdots(0,0)(1,1)(2,2)(-1,-1)(-2,-2)
+
+% 自定义样式和大小
+\\psdots[dotstyle=*,dotsize=5pt,linecolor=blue](0,2)(1,2)(2,2)
+
+% 空心圆
+\\psdots[dotstyle=o,dotsize=4pt,linecolor=red](0,1)(1,1)(2,1)
+
+% 加号
+\\psdots[dotstyle=+,dotsize=6pt,linecolor=green](0,0)(1,0)(2,0)
+
+% 叉号
+\\psdots[dotstyle=x,dotsize=5pt,linecolor=orange](0,-1)(1,-1)(2,-1)
+
+% 方形
+\\psdots[dotstyle=square,dotsize=4pt,fillcolor=purple](0,-2)(1,-2)(2,-2)
+
+% 菱形
+\\psdots[dotstyle=diamond,dotsize=4pt,fillcolor=cyan](-2,0)(-2,1)(-2,2)
+
+% 透明度测试
+\\psdots[dotstyle=*,dotsize=6pt,opacity=0.5,fillcolor=red](-1,2)(-1,1)(-1,0)
+\\end{pspicture}`
+  },
+  {
+    id: 'psellipse',
+    name: 'psellipse - 椭圆',
+    description: '测试椭圆命令，包括基本用法、选项参数（linecolor, fillcolor, fillstyle, opacity）',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 基本椭圆
+\\psellipse(0,0)(2,1)
+
+% 带填充
+\\psellipse[fillcolor=red,fillstyle=solid](2,0)(1.5,0.8)
+
+% 自定义颜色和宽度
+\\psellipse[linecolor=blue,linewidth=3pt](-2,0)(1.5,0.8)
+
+% 透明度测试
+\\psellipse[opacity=0.5,fillcolor=green,fillstyle=solid](0,2)(1.5,1)
+\\psellipse[opacity=0.7,fillcolor=yellow,fillstyle=solid](0,-2)(1.5,1)
+
+% 圆形（rx=ry）
+\\psellipse[linecolor=purple](2,2)(1,1)
+
+% 不同方向的椭圆
+\\psellipse[linecolor=cyan](2,-2)(0.8,1.5)
+\\psellipse[linecolor=magenta](-2,2)(1.5,0.5)
+\\end{pspicture}`
+  },
+  {
+    id: 'psoval',
+    name: 'psoval - 圆角矩形',
+    description: '测试圆角矩形命令，包括基本用法、linearc 选项和填充',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 基本圆角矩形（默认圆角）
+\\psoval(0,0)(2,1.5)
+
+% 自定义圆角半径
+\\psoval[linearc=0.5,linecolor=blue](-2,0)(-0.5,1.5)
+
+% 带填充的圆角矩形
+\\psoval[fillcolor=red,fillstyle=solid,linearc=0.3](0,-2)(2,-0.5)
+
+% 透明度测试
+\\psoval[opacity=0.5,fillcolor=green,fillstyle=solid,linearc=0.4](2,0)(3.5,1.5)
+
+% 不同圆角大小
+\\psoval[linearc=0.1,linecolor=purple](-2,-2)(-0.5,-0.5)
+\\psoval[linearc=0.8,linecolor=orange](0.5,-2)(2.5,-0.5)
+\\end{pspicture}`
+  },
+  {
+    id: 'psdiamond',
+    name: 'psdiamond - 菱形',
+    description: '测试菱形命令，包括基本用法、填充和透明度',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 基本菱形
+\\psdiamond(0,0)(2,1.5)
+
+% 带填充的菱形
+\\psdiamond[fillcolor=red,fillstyle=solid](-2,0)(1.5,1)
+
+% 自定义颜色和宽度
+\\psdiamond[linecolor=blue,linewidth=3pt](2,0)(1.5,1)
+
+% 透明度测试
+\\psdiamond[opacity=0.5,fillcolor=green,fillstyle=solid](0,-2)(2,1.5)
+\\psdiamond[opacity=0.7,fillcolor=yellow,fillstyle=solid](0,2)(1.5,1)
+
+% 不同大小的菱形
+\\psdiamond[linecolor=cyan](-2,-2)(1,0.8)
+\\psdiamond[linecolor=magenta](2,2)(1.5,1.2)
+\\end{pspicture}`
+  },
+  {
+    id: 'psvector',
+    name: 'psvector - 向量',
+    description: '测试向量命令，包括基本用法、箭头类型和选项参数',
+    code: `\\begin{pspicture}(-4,-4)(4,4)
+% 坐标轴
+\\psaxes[showorigin=false](0,0)(-3,-3)(3,3)
+
+% 基本向量（默认箭头 ->）
+\\psvector(0,0)(2,2)
+
+% 双向箭头
+\\psvector{<->}(-2,-2)(-0.5,-0.5)
+
+% 自定义颜色和宽度
+\\psvector[linecolor=red,linewidth=3pt](0,-2)(2,0)
+
+% 虚线向量
+\\psvector[dash=10,5,linecolor=blue](2,-2)(3.5,-0.5)
+
+% 透明度测试
+\\psvector[opacity=0.5,linecolor=green](-2,2)(-0.5,3.5)
+
+% 不同箭头类型
+\\psvector{->}(-2,0)(-0.5,1)
+\\psvector{<-}(0.5,1)(2,0)
+\\psvector{<->}(-2,2)(-0.5,3.5)
+
+% 带点标记的向量
+\\psvector{*-*}(2,0)(3.5,1.5)
+\\end{pspicture}`
   }
 ];
 
